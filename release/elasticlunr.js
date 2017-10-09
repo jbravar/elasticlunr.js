@@ -916,18 +916,22 @@ elasticlunr.Index.prototype.search = function (query, userConfig) {
     }
 
     var m_fsr = this.fieldSearch(tokens, field, config)
-    var fieldSearchResults = m_fsr.results;
+    if (m_fsr) {
+      var fieldSearchResults = m_fsr.results
+    }
     var fieldBoost = config[field].boost;
 
     for (var docRef in fieldSearchResults) {
       fieldSearchResults[docRef] = fieldSearchResults[docRef] * fieldBoost;
     }
 
-    for (var docRef in m_fsr.tokens) {
-      if (docRef in tokenResults) {
-        tokenResults[docRef] = [...new Set(tokenResults[docRef].concat(m_fsr.tokens[docRef]))]
-      } else {
-        tokenResults[docRef] = m_fsr.tokens[docRef]
+    if (m_fsr) {
+      for (var docRef in m_fsr.tokens) {
+        if (docRef in tokenResults) {
+          tokenResults[docRef] = [...new Set(tokenResults[docRef].concat(m_fsr.tokens[docRef]))]
+        } else {
+          tokenResults[docRef] = m_fsr.tokens[docRef]
+        }
       }
     }
 
@@ -940,13 +944,15 @@ elasticlunr.Index.prototype.search = function (query, userConfig) {
     }
   }
 
-  queryResults = Object.keys(queryResults).reduce((acc, key) => {
-    if (tokenResults[key].length === queryTokens.any.length) {
-      acc[key] = queryResults[key]
-    }
+  if (queryTokens.any) {
+    queryResults = Object.keys(queryResults).reduce((acc, key) => {
+      if (tokenResults[key].length === queryTokens.any.length) {
+        acc[key] = queryResults[key]
+      }
 
-    return acc
-  }, {})
+      return acc
+    }, {})
+  }
 
   var results = [];
   var result;
@@ -959,7 +965,6 @@ elasticlunr.Index.prototype.search = function (query, userConfig) {
   }
 
   results.sort(function (a, b) { return b.score - a.score; });
-  console.log(results)
   return results;
 };
 
