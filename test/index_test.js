@@ -289,16 +289,13 @@ test('search a complex document with AND', function () {
 
   docs.forEach(val => idx.addDoc(val))
 
-  // const res = idx.search('military', searchConf)
-  // equal(res.length, 6)
-  // const res2 = idx.search('soccer', searchConf)
-  // console.log(res2)
+  const res = idx.search('military', searchConf)
+  equal(res.length, 6)
+  const res2 = idx.search('soccer', searchConf)
   const res3 = idx.search('florida soccer', searchConf)
   equal(res3.length, 4)
-  console.log('results size', res3.length)
-  // const res4 = idx.search('florida soccer baseball', searchConf)
-  // equal(res4.length, 4)
-  // console.log('results size', res4.length)
+  const res4 = idx.search('florida soccer baseball', searchConf)
+  equal(res4.length, 4)
 })
 
 test('emitting update events', function () {
