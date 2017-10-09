@@ -946,7 +946,10 @@ elasticlunr.Index.prototype.search = function (query, userConfig) {
 
   if (queryTokens.any) {
     queryResults = Object.keys(queryResults).reduce((acc, key) => {
-      if (tokenResults[key].length === queryTokens.any.length) {
+      if (
+        tokenResults[key] !== undefined &&
+        tokenResults[key].length === queryTokens.any.length
+      ) {
         acc[key] = queryResults[key]
       }
 
