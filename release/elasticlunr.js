@@ -1,6 +1,6 @@
 /**
  * elasticlunr - http://weixsong.github.io
- * Lightweight full-text search engine in Javascript for browser search and offline search. - 0.9.5
+ * Lightweight full-text search engine in Javascript for browser search and offline search. - 0.9.6
  *
  * Copyright (C) 2017 Oliver Nightingale
  * Copyright (C) 2017 Wei Song
@@ -83,7 +83,7 @@ var elasticlunr = function (config) {
   return idx;
 };
 
-elasticlunr.version = "0.9.5";
+elasticlunr.version = "0.9.6";
 
 // only used this to make elasticlunr.js compatible with lunr-languages
 // this is a trick to define a global alias of elasticlunr
@@ -908,6 +908,7 @@ elasticlunr.Index.prototype.search = function (query, userConfig) {
   }
 
   var queryResults = {};
+  var counts = {};
 
   for (var field in config) {
     var tokens = queryTokens[field] || queryTokens.any;
@@ -923,6 +924,13 @@ elasticlunr.Index.prototype.search = function (query, userConfig) {
     }
 
     for (var docRef in fieldSearchResults) {
+      // here! only ones that are in all should come out! a true AND
+      if (docRef in counts) {
+        counts[docRef] = counts[docRef] + 1
+      } else {
+        counts[docRef] = 1
+      }
+
       if (docRef in queryResults) {
         queryResults[docRef] += fieldSearchResults[docRef];
       } else {
@@ -930,6 +938,13 @@ elasticlunr.Index.prototype.search = function (query, userConfig) {
       }
     }
   }
+
+  queryResults = Object.keys(queryResults)
+    .filter(key => counts[key] === queryTokens.any.length)
+    .reduce((obj, key) => {
+      obj[key] = queryResults[key]
+      return obj
+    }, {})
 
   var results = [];
   var result;

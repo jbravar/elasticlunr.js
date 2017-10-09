@@ -224,6 +224,37 @@ test('search a document', function () {
   equal(secondFooResult.length, 0);
 });
 
+test('search a complex document with AND', function () {
+  var idx = new elasticlunr.Index,
+      docs = [
+        {
+          id: 1,
+          body: ['some', 'complex', 'strings'],
+          things: ['more', 'things']
+        },
+        {
+          id: 2,
+          body: ['other', 'complex', 'data'],
+          things: ['soccer', 'equestrian']
+        }
+      ]
+
+  idx.addField('body')
+  idx.addField('things')
+  docs.forEach(val => idx.addDoc(val))
+
+  const res = idx.search('complex', { expand: true, bool: 'OR' })
+  equal(res.length, 2)
+  const res2 = idx.search('other', { expand: true, bool: 'OR' })
+  equal(res2.length, 1)
+  const res3 = idx.search('some', { expand: true, bool: 'OR' })
+  equal(res3.length, 1)
+  const res4 = idx.search('soccer', { expand: true, bool: 'OR' })
+  equal(res4.length, 1)
+  const res5 = idx.search('complex soccer', { expand: true, bool: 'OR' })
+  equal(res5.length, 1)
+})
+
 test('emitting update events', function () {
   var idx = new elasticlunr.Index,
       doc = {id: 1, body: 'foo'},
