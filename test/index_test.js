@@ -226,33 +226,79 @@ test('search a document', function () {
 
 test('search a complex document with AND', function () {
   var idx = new elasticlunr.Index,
-      docs = [
-        {
-          id: 1,
-          body: ['some', 'complex', 'strings'],
-          things: ['more', 'things']
-        },
-        {
-          id: 2,
-          body: ['other', 'complex', 'data'],
-          things: ['soccer', 'equestrian']
-        }
-      ]
+      docs = schoolsFixture
 
-  idx.addField('body')
-  idx.addField('things')
+  idx.addField('name')
+  idx.addField('addressString')
+  idx.addField('applicationTypeString')
+  idx.addField('studentTypeString')
+  idx.addField('schoolTypeString')
+  idx.addField('supportPrograms')
+  idx.addField('englishPrograms')
+  idx.addField('advancedPrograms')
+  idx.addField('socialPrograms')
+  idx.addField('visualPrograms')
+  idx.addField('historyPrograms')
+  idx.addField('sciencePrograms')
+  idx.addField('specialPrograms')
+  idx.addField('foreignPrograms')
+  idx.addField('mathPrograms')
+  idx.addField('religiousPrograms')
+  idx.addField('computerPrograms')
+  idx.addField('apPrograms')
+  idx.addField('musicPrograms')
+  idx.addField('dormAmenities')
+  idx.addField('facilities')
+  idx.addField('clubs')
+  idx.addField('interscholasticSports')
+  idx.addField('recreationalSports')
+  idx.addField('artsPrograms')
+  idx.addField('religion')
+
+  const searchConf = {
+    fields: {
+      name: { boost: 4 },
+      addressString: { boost: 2 },
+      applicationTypeString: { boost: 1 },
+      studentTypeString: { boost: 3 },
+      schoolTypeString: { boost: 1 },
+      supportPrograms: { boost: 1 },
+      englishPrograms: { boost: 1 },
+      advancedPrograms: { boost: 1 },
+      socialPrograms: { boost: 1 },
+      visualPrograms: { boost: 1 },
+      historyPrograms: { boost: 1 },
+      sciencePrograms: { boost: 1 },
+      specialPrograms: { boost: 1 },
+      foreignPrograms: { boost: 1 },
+      mathPrograms: { boost: 1 },
+      religiousPrograms: { boost: 1 },
+      computerPrograms: { boost: 1 },
+      apPrograms: { boost: 1 },
+      musicPrograms: { boost: 1 },
+      dormAmenities: { boost: 1 },
+      facilities: { boost: 1 },
+      clubs: { boost: 1 },
+      interscholasticSports: { boost: 1 },
+      recreationalSports: { boost: 1 },
+      artsPrograms: { boost: 1 },
+      religion: { boost: 1 }
+    },
+    expand: true
+  }
+
   docs.forEach(val => idx.addDoc(val))
 
-  const res = idx.search('complex', { expand: true, bool: 'OR' })
-  equal(res.length, 2)
-  const res2 = idx.search('other', { expand: true, bool: 'OR' })
-  equal(res2.length, 1)
-  const res3 = idx.search('some', { expand: true, bool: 'OR' })
-  equal(res3.length, 1)
-  const res4 = idx.search('soccer', { expand: true, bool: 'OR' })
-  equal(res4.length, 1)
-  const res5 = idx.search('complex soccer', { expand: true, bool: 'OR' })
-  equal(res5.length, 1)
+  // const res = idx.search('military', searchConf)
+  // equal(res.length, 6)
+  // const res2 = idx.search('soccer', searchConf)
+  // console.log(res2)
+  const res3 = idx.search('florida soccer', searchConf)
+  equal(res3.length, 4)
+  console.log('results size', res3.length)
+  // const res4 = idx.search('florida soccer baseball', searchConf)
+  // equal(res4.length, 4)
+  // console.log('results size', res4.length)
 })
 
 test('emitting update events', function () {
